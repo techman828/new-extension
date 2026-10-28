@@ -1,0 +1,15 @@
+{
+  "name": "upwork-job-tracker",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Monitors Upwork for new job postings and lists them on a web page.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "linkedom": "^0.18.14"
+  }
+}

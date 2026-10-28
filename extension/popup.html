@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Upwork Tracker Connector</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="row">
+    <h1>Upwork session</h1>
+    <button type="button" id="btn-refresh" class="secondary" title="Read the cookies, Authorization header and user agent again">Refresh</button>
+  </header>
+
+  <section>
+    <div class="row"><h2>Cookie header</h2><button type="button" class="secondary" data-copy="cookie">Copy</button></div>
+    <span id="cookie-status" class="muted small"></span>
+    <textarea id="cookie" rows="3" readonly spellcheck="false"></textarea>
+  </section>
+
+  <section>
+    <div class="row"><h2>Authorization header <span class="muted small">(optional)</span></h2><button type="button" class="secondary" data-copy="token">Copy</button></div>
+    <span id="token-status" class="muted small"></span>
+    <input id="token" type="text" readonly spellcheck="false">
+    <button type="button" id="btn-open-search" class="secondary" hidden>Open a job search</button>
+  </section>
+
+  <section>
+    <div class="row"><h2>User agent</h2><button type="button" class="secondary" data-copy="user-agent">Copy</button></div>
+    <input id="user-agent" type="text" readonly spellcheck="false">
+  </section>
+
+  <form id="send-form" class="send" autocomplete="off">
+    <h2>Send to the tracker</h2>
+    <label>Tracker address <input id="tracker-url" type="url" required placeholder="http://localhost:3000"></label>
+    <label>Password <span class="muted small">(only if the tracker runs with <code>APP_PASSWORD</code>)</span>
+      <input id="tracker-password" type="password"></label>
+    <button type="submit" id="btn-send">Send connection</button>
+    <span id="send-msg" class="muted small"></span>
+    <label class="check"><input id="relay" type="checkbox"> Check Upwork through this browser</label>
+    <span id="relay-status" class="muted small"></span>
+  </form>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

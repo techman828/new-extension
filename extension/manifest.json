@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Upwork Tracker Connector",
+  "version": "1.2.0",
+  "description": "Sends the Upwork session to the Upwork Job Tracker and makes its Upwork requests from this browser, which Upwork does not block.",
+  "minimum_chrome_version": "102",
+  "permissions": ["cookies", "webRequest", "storage", "alarms", "scripting", "declarativeNetRequestWithHostAccess"],
+  "host_permissions": ["https://*.upwork.com/*", "http://localhost/*", "http://127.0.0.1/*"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": {
+    "default_title": "Upwork Tracker Connector",
+    "default_popup": "popup.html",
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png" }
+  },
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }
+}

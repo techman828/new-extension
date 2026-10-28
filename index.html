@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Upwork Job Tracker</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="icons/icon48.png" alt="" width="28" height="28">
+      <span>Job Tracker</span>
+    </div>
+    <nav>
+      <a href="#job-track" data-section="job-track">Job Track <span id="nav-count" class="count"></span></a>
+      <a href="#prompts" data-section="prompts">Prompts</a>
+      <a href="#settings" data-section="settings">Settings</a>
+      <a href="#connection" data-section="connection">Connection <span id="nav-connection" class="count"></span></a>
+      <a href="#log" data-section="log">Activity Log</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="statusbar">
+      <div class="status">
+        <span id="status-dot" class="dot"></span>
+        <strong id="status-label">—</strong>
+        <span id="status-detail" class="muted"></span>
+      </div>
+      <div class="actions">
+        <button id="btn-check" class="secondary">Check now</button>
+        <button id="btn-toggle">Start monitoring</button>
+      </div>
+    </header>
+
+    <section id="job-track" class="section">
+      <div class="section-head">
+        <div class="tools">
+          <input id="filter" type="search" placeholder="Filter by title, skill, description…">
+          <button id="btn-clear-jobs" class="secondary">Clear list</button>
+        </div>
+      </div>
+      <p id="jobs-empty" class="empty">No jobs yet. Jobs matching your filters appear here once monitoring starts.</p>
+      <ul id="jobs" class="jobs"></ul>
+    </section>
+
+    <section id="prompts" class="section" hidden>
+      <form id="prompts-form" class="card filters prompts" autocomplete="off">
+        <fieldset>
+          <legend><label for="p-client-lookup">Identify the client</label></legend>
+          <span class="muted small">Prompt used to find out who posted a job.</span>
+          <textarea id="p-client-lookup" rows="6" placeholder="e.g. Based on this job post, identify the company or person who posted it…"></textarea>
+        </fieldset>
+
+        <fieldset>
+          <legend><label for="p-similar-projects">Similar projects</label></legend>
+          <span class="muted small">Prompt used to search for projects similar to a job.</span>
+          <textarea id="p-similar-projects" rows="6" placeholder="e.g. Find existing projects or products similar to what this job describes…"></textarea>
+        </fieldset>
+
+        <fieldset>
+          <legend><label for="p-outreach">Email outreach</label></legend>
+          <span class="muted small">Prompt used to generate an outreach email to the client.</span>
+          <textarea id="p-outreach" rows="6" placeholder="e.g. Write a short, personal outreach email to this client…"></textarea>
+        </fieldset>
+
+        <span id="prompts-msg" class="muted small">Changes are saved automatically.</span>
+      </form>
+    </section>
+
+    <section id="settings" class="section" hidden>
+      <div class="section-head">
+        <div>
+          <p class="muted small subtitle">Same filters as Upwork's job search, checked on the interval set under Monitoring, using the
+          Upwork session saved under <a href="#connection">Connection</a>.</p>
+        </div>
+        <div class="tools">
+          <span id="filters-msg" class="muted small">Changes are saved automatically.</span>
+          <button type="button" id="btn-reset-filters" class="secondary">Reset filters</button>
+        </div>
+      </div>
+
+      <form id="filters-form" class="settings-grid" autocomplete="off">
+        <div class="card filters">
+          <h2>Search</h2>
+          <fieldset>
+            <legend><label for="f-q">Keyword</label></legend>
+            <input id="f-q" type="search" placeholder="e.g. chrome extension">
+          </fieldset>
+          <fieldset>
+            <legend>Category</legend>
+            <div id="f-categories" class="picker"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Client location</legend>
+            <div id="f-locations" class="picker"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Client time zones</legend>
+            <div id="f-timezones" class="picker"></div>
+          </fieldset>
+        </div>
+
+        <div class="card filters">
+          <h2>Job type</h2>
+          <fieldset>
+            <label class="check"><input id="f-hourly" type="checkbox"> Hourly</label>
+            <div class="range indent">
+              <span class="money"><input id="f-hourly-min" type="number" min="0" step="any" placeholder="Min"></span> /hr
+              <span class="money"><input id="f-hourly-max" type="number" min="0" step="any" placeholder="Max"></span> /hr
+            </div>
+          </fieldset>
+          <fieldset>
+            <label class="check"><input id="f-fixed" type="checkbox"> Fixed-Price</label>
+            <div id="f-fixed-ranges" class="indent budgets"></div>
+            <div class="range indent">
+              <span class="money"><input id="f-fixed-min" type="number" min="0" step="any" placeholder="Min"></span>
+              <span class="money"><input id="f-fixed-max" type="number" min="0" step="any" placeholder="Max"></span>
+            </div>
+          </fieldset>
+          <p class="muted small">Leave both unchecked to include all job types.</p>
+        </div>
+
+        <div class="card filters method">
+          <h2>Monitoring</h2>
+          <fieldset>
+            <legend>Method</legend>
+            <label class="check">
+              <input type="radio" name="method" value="api">
+              <span><strong>Upwork API</strong> <span class="muted small">— Upwork's own GraphQL search. Faster,
+              includes proposals and payment status.</span></span>
+            </label>
+            <label class="check">
+              <input type="radio" name="method" value="page">
+              <span><strong>Search page</strong> <span class="muted small">— loads the search results page and reads
+              the job tiles.</span></span>
+            </label>
+            <span id="method-msg" class="muted small"></span>
+          </fieldset>
+          <fieldset>
+            <legend><label for="f-interval">Check every</label></legend>
+            <select id="f-interval"></select>
+            <span id="interval-msg" class="muted small"></span>
+          </fieldset>
+          <fieldset>
+            <legend><label for="f-per-page">Jobs per load</label></legend>
+            <select id="f-per-page"></select>
+          </fieldset>
+          <fieldset>
+            <legend>Sort by</legend>
+            <span>Most recent <span class="muted small">(always)</span></span>
+          </fieldset>
+        </div>
+
+        <div class="url-preview">
+          <span class="muted small">Search URL — open it to check the results match what you expect on Upwork.</span>
+          <a id="f-url" target="_blank" rel="noopener"></a>
+        </div>
+      </form>
+    </section>
+
+    <section id="connection" class="section" hidden>
+      <form id="connection-form" class="card filters connection" autocomplete="off">
+        <h2>Upwork connection</h2>
+        <p class="muted small">The server checks Upwork on your behalf, so it needs your Upwork session. In a browser where you are
+        logged in to Upwork, open a job search, open the developer tools (F12) → <strong>Network</strong>, click any request to
+        <code>www.upwork.com</code> and copy its request headers below. Saved values are never shown again; leave a field empty to keep
+        what is saved.</p>
+        <p class="small"><strong>Upwork blocks requests made by this server itself.</strong> Install the Upwork Tracker Connector
+        extension (the <code>extension</code> folder) in that browser and turn on <em>Check Upwork through this browser</em> in its
+        popup: the checks are then made from the browser while it is open, and the session saved here stays up to date.</p>
+        <span id="relay-status" class="small"></span>
+
+        <fieldset>
+          <legend><label for="c-cookie">Cookie header</label></legend>
+          <span class="muted small">The full value of the request's <code>cookie</code> header. The API token and organization are read
+          from it.</span>
+          <textarea id="c-cookie" rows="4" spellcheck="false" placeholder="visitor_id=…; oauth2_global_js_token=oauth2v2_…; current_organization_uid=…; cf_clearance=…"></textarea>
+        </fieldset>
+
+        <fieldset>
+          <legend><label for="c-token">Authorization header <span class="muted small">(optional)</span></label></legend>
+          <span class="muted small">From a request to <code>/api/graphql/v1?alias=userJobSearch</code>. Tried before the cookie tokens.</span>
+          <input id="c-token" type="text" spellcheck="false" placeholder="bearer oauth2v2_…">
+        </fieldset>
+
+        <fieldset>
+          <legend><label for="c-user-agent">User agent</label></legend>
+          <span class="muted small">Upwork's security check ties <code>cf_clearance</code> to the browser it was issued to, so use the
+          user agent of the browser you copied the cookies from.</span>
+          <input id="c-user-agent" type="text" spellcheck="false" placeholder="Mozilla/5.0 …">
+          <button type="button" id="btn-use-ua" class="secondary">Use this browser's user agent</button>
+        </fieldset>
+
+        <div class="row">
+          <button type="submit">Save connection</button>
+          <button type="button" id="btn-clear-connection" class="secondary">Forget connection</button>
+        </div>
+        <span id="connection-status" class="muted small"></span>
+        <span id="connection-msg" class="muted small"></span>
+      </form>
+    </section>
+
+    <section id="log" class="section" hidden>
+      <div class="section-head">
+        <div class="tools"><button id="btn-clear-log" class="secondary">Clear log</button></div>
+      </div>
+      <ul id="log-list" class="log"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
